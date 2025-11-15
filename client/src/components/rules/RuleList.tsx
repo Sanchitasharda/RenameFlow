@@ -19,10 +19,9 @@ export function RuleList() {
 
       {rules.length === 0 ? (
         <div className="text-center py-12 bg-gray-50 dark:bg-gray-800 rounded-lg border-2 border-dashed border-gray-300 dark:border-gray-600">
-          <p className="text-gray-500 dark:text-gray-400 mb-4">
-            No rules added yet. Add your first rule to start renaming!
+          <p className="text-gray-500 dark:text-gray-400">
+            No rules added yet. Click "Add Rule" above to start renaming!
           </p>
-          <AddRuleDropdown />
         </div>
       ) : (
         <div className="space-y-3">
