@@ -40,7 +40,9 @@ export function CasingRuleConfig({ rule }: CasingRuleConfigProps) {
   ];
 
   const handleCaseTypeChange = (caseType: CasingType) => {
-    updateRule(rule.id, { ...rule, caseType });
+    updateRule(rule.id, {
+      config: { casingType: caseType },
+    });
   };
 
   return (
@@ -58,7 +60,7 @@ export function CasingRuleConfig({ rule }: CasingRuleConfigProps) {
               type="radio"
               name={`case-type-${rule.id}`}
               value={caseType.value}
-              checked={rule.caseType === caseType.value}
+              checked={rule.config.casingType === caseType.value}
               onChange={() => handleCaseTypeChange(caseType.value)}
               className="mr-3"
             />

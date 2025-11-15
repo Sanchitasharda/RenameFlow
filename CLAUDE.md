@@ -6,54 +6,82 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-**RenameFlow** is a batch file renaming web application that allows users to rename large batches of files quickly and accurately using rule-based automation. Built with React, TypeScript, Node.js, and Express.
+**RenameFlow** is a client-side batch file renaming web application that allows users to rename large batches of files quickly and accurately using rule-based automation. Built entirely with React, TypeScript, and Vite, all processing happens in the browser.
 
 ### Tech Stack
-- **Frontend**: React 18, TypeScript, Vite, Tailwind CSS, Zustand (state management), @dnd-kit (drag & drop)
-- **Backend**: Node.js, Express, TypeScript, Multer (file uploads), adm-zip (ZIP generation)
+- **Frontend**: React 19, TypeScript, Vite, Tailwind CSS v4, Zustand (state management), @dnd-kit (drag & drop)
+- **Client-Side Processing**: JSZip (ZIP generation), FileSaver (downloads)
 - **Development**: ESLint, Prettier, Git
+
+### Architecture
+**Client-Only Application** - RenameFlow is designed to run entirely in the browser with no backend server. All file processing, rule application, and ZIP generation happen client-side using Web APIs.
 
 ---
 
 ## Project Structure
 
 ```
-rename-flow/
-├── client/                 # Frontend React application
+RenameFlow/
+├── client/                         # Frontend React application
 │   ├── src/
-│   │   ├── components/     # Reusable UI components
-│   │   │   ├── ui/        # Base UI elements (Button, Input, Card)
-│   │   │   ├── upload/    # Upload-related components
-│   │   │   ├── rules/     # Rule configuration components
-│   │   │   └── preview/   # Preview components
-│   │   ├── features/      # Feature modules
-│   │   │   ├── file-upload/
-│   │   │   ├── rule-engine/
-│   │   │   └── preview/
-│   │   ├── services/      # Business logic services
-│   │   │   ├── RenameService.ts
-│   │   │   ├── FileService.ts
-│   │   │   └── ZipService.ts
-│   │   ├── types/         # TypeScript interfaces and types
-│   │   ├── store/         # Zustand state management
-│   │   ├── hooks/         # Custom React hooks
-│   │   └── utils/         # Utility functions
-│   └── package.json
+│   │   ├── components/             # Reusable UI components
+│   │   │   ├── ui/                # Base UI elements (Header, Layout)
+│   │   │   ├── upload/            # Upload components (FileUploadZone, FileList)
+│   │   │   └── rules/             # Rule configuration components
+│   │   │       ├── RuleList.tsx           # Drag & drop rule list
+│   │   │       ├── RuleCard.tsx           # Individual rule card
+│   │   │       ├── RuleConfigPanel.tsx    # Rule configuration panel
+│   │   │       ├── AddRuleDropdown.tsx    # Add new rule dropdown
+│   │   │       ├── CasingRuleConfig.tsx   # Casing rule UI
+│   │   │       ├── PrefixRuleConfig.tsx   # Prefix rule UI
+│   │   │       ├── SuffixRuleConfig.tsx   # Suffix rule UI
+│   │   │       ├── NumberingRuleConfig.tsx # Numbering rule UI
+│   │   │       └── FindReplaceRuleConfig.tsx # Find & Replace rule UI
+│   │   ├── services/               # Business logic services
+│   │   │   ├── FileService.ts             # File validation and management
+│   │   │   ├── RenameService.ts           # Apply renaming logic
+│   │   │   └── rule-engine/              # Rule processors (SOLID architecture)
+│   │   │       ├── RuleProcessor.ts       # Abstract base class
+│   │   │       ├── RulePipeline.ts        # Sequential rule processing
+│   │   │       ├── RuleFactory.ts         # Factory pattern for processors
+│   │   │       ├── CasingRuleProcessor.ts
+│   │   │       ├── PrefixRuleProcessor.ts
+│   │   │       ├── SuffixRuleProcessor.ts
+│   │   │       ├── NumberingRuleProcessor.ts
+│   │   │       └── FindReplaceRuleProcessor.ts
+│   │   ├── types/                  # TypeScript interfaces and types
+│   │   │   ├── File.ts            # UploadedFile, FileValidationResult
+│   │   │   ├── Rule.ts            # Rule types and enums
+│   │   │   └── index.ts           # Central export
+│   │   ├── store/                  # Zustand state management
+│   │   │   ├── useFileStore.ts    # File state (files, add, remove)
+│   │   │   ├── useRuleStore.ts    # Rule state (rules, add, edit, reorder)
+│   │   │   ├── useUIStore.ts      # UI state (dark mode, messages)
+│   │   │   └── index.ts           # Central export
+│   │   ├── hooks/                  # Custom React hooks
+│   │   │   └── useFileUpload.ts   # File upload hook
+│   │   ├── utils/                  # Utility functions
+│   │   │   ├── fileHelpers.ts     # File manipulation utilities
+│   │   │   ├── fileValidation.ts  # File validation logic
+│   │   │   └── fileSanitization.ts # Filename sanitization
+│   │   ├── assets/                 # Static assets
+│   │   ├── App.tsx                 # Main application component
+│   │   └── main.tsx                # Application entry point
+│   ├── public/                     # Public static files
+│   ├── index.html                  # HTML entry point
+│   ├── package.json                # Dependencies and scripts
+│   ├── vite.config.ts              # Vite configuration (with Tailwind plugin)
+│   ├── tailwind.config.js          # Tailwind CSS v4 configuration
+│   ├── tsconfig.json               # TypeScript configuration
+│   ├── tsconfig.app.json           # App-specific TS config
+│   ├── tsconfig.node.json          # Node-specific TS config
+│   └── eslint.config.js            # ESLint configuration
 │
-├── server/                # Backend Node.js/Express server
-│   ├── src/
-│   │   ├── controllers/   # Route handlers
-│   │   ├── services/      # Business logic
-│   │   │   ├── FileProcessor.ts
-│   │   │   ├── RuleEngine.ts
-│   │   │   └── ZipGenerator.ts
-│   │   ├── middleware/    # Express middleware
-│   │   ├── types/         # TypeScript types
-│   │   ├── utils/         # Utilities (validators, sanitizers)
-│   │   └── routes/        # API routes
-│   └── package.json
-│
-└── CLAUDE.md              # This file
+├── .claude/                        # Claude Code configuration
+├── prd-rename flow.txt             # Product Requirements Document
+├── structure.txt                   # Detailed structure documentation
+├── CLAUDE.md                       # This file
+└── .gitignore                      # Git ignore rules
 ```
 
 ---
@@ -66,540 +94,340 @@ npm run dev          # Start development server (http://localhost:5173)
 npm run build        # Build for production
 npm run preview      # Preview production build
 npm run lint         # Run ESLint
-npm run format       # Run Prettier
 ```
 
-### Backend (server/)
-```bash
-npm run dev          # Start development server with nodemon
-npm run build        # Compile TypeScript
-npm start            # Start production server
-npm run lint         # Run ESLint
-npm run format       # Run Prettier
-```
+**Note**: There is no backend server. All processing happens client-side.
+
+---
+
+## Current Implementation Status
+
+### ✅ **PHASE 1: Project Foundation & Setup** - COMPLETE
+- Vite + React 19 + TypeScript frontend
+- Tailwind CSS v4 with dark mode support
+- ESLint and Prettier configured
+- Project structure following SOLID principles
+
+### ✅ **PHASE 2: Core Data Models & State Management** - COMPLETE
+- **Type Definitions** (`src/types/`)
+  - `UploadedFile` interface with file metadata
+  - `Rule` union type with 5 rule variants
+  - `RuleType` enum (CASING, PREFIX, SUFFIX, NUMBERING, FIND_REPLACE)
+  - Type-safe rule configurations
+
+- **State Management** (Zustand stores)
+  - `useFileStore`: File management (add, remove, update)
+  - `useRuleStore`: Rules management (add, edit, delete, reorder)
+  - `useUIStore`: UI state (dark mode, error/success messages)
+
+- **Service Layer**
+  - `FileService`: File validation
+  - `RenameService`: Apply renaming logic with duplicate resolution
+
+### ✅ **PHASE 3: File Upload System** - COMPLETE
+- Drag & drop zone with visual feedback (`FileUploadZone.tsx`)
+- File input fallback for accessibility
+- File list display with metadata (`FileList.tsx`, `FileListItem.tsx`)
+- Remove individual files functionality
+- File validation (max 500 files, 100MB total, 50MB per file)
+- `useFileUpload` custom hook
+
+### ✅ **PHASE 4: Rule Engine - Foundation** - COMPLETE
+- **Abstract Rule Processor** (`RuleProcessor.ts`)
+  - Base class with `apply()` method
+  - Helper methods: `getBasename()`, `getExtension()`, `sanitize()`, `validateFilename()`
+
+- **Rule Processors** (all implemented)
+  - `CasingRuleProcessor` - 5 casing types (snake_case, camelCase, PascalCase, UPPERCASE, lowercase)
+  - `PrefixRuleProcessor` - Add text before filename
+  - `SuffixRuleProcessor` - Add text before extension
+  - `NumberingRuleProcessor` - Sequential numbering with padding and placement
+  - `FindReplaceRuleProcessor` - Text search/replace with case sensitivity and replace-all options
+
+- **Rule Factory** (`RuleFactory.ts`)
+  - Creates appropriate processor for each rule type
+
+- **Rule Pipeline** (`RulePipeline.ts`)
+  - Sequential processing of rules
+  - Batch processing for multiple files
+
+- **Rule UI Components**
+  - `RuleList` with drag & drop reordering (@dnd-kit)
+  - `RuleCard` for each rule
+  - `RuleConfigPanel` for editing rules
+  - `AddRuleDropdown` for adding new rules
+  - Configuration UI for each rule type
+
+### 🚧 **PHASE 5: Live Preview System** - IN PROGRESS
+- Preview calculation integrated into `RenameService`
+- Duplicate detection and resolution implemented
+- Real-time preview updates when rules change (via Zustand reactivity)
+
+### 📋 **Remaining Phases**
+- **PHASE 6**: Rule Management enhancements (undo/redo, keyboard shortcuts)
+- **PHASE 7**: Download & ZIP Generation (JSZip + FileSaver)
+- **PHASE 8**: Error Handling & Edge Cases (enhanced validation)
+- **PHASE 9**: UI/UX Polish & Accessibility (WCAG AA compliance)
+- **PHASE 10**: Testing & Quality Assurance
+- **PHASE 11**: Documentation & Final Polish
 
 ---
 
 ## SOLID Principles Applied
 
-This project follows SOLID principles for maintainability and scalability:
+This project strictly follows SOLID principles for maintainability and scalability:
 
 1. **Single Responsibility**: Each service/component has one clear purpose
-   - `RenameService`: Handles renaming logic only
-   - `FileService`: Handles file validation and management
-   - `ZipService`: Handles ZIP generation
+   - `RenameService`: Handles renaming logic and duplicate resolution only
+   - `FileService`: Handles file validation only
+   - Each rule processor handles one transformation type
 
 2. **Open/Closed**: Rule processors are extensible without modifying existing code
-   - Base `RuleProcessor` abstract class
-   - Concrete implementations: `CasingRuleProcessor`, `PrefixRuleProcessor`, etc.
+   - Abstract `RuleProcessor` base class (`src/services/rule-engine/RuleProcessor.ts`)
+   - Concrete implementations extend the base class
+   - New rule types can be added without changing existing processors
 
 3. **Liskov Substitution**: All rule processors can be used interchangeably
+   - All processors implement the same `apply()` method signature
+   - `RuleFactory` can create any processor type
+   - `RulePipeline` processes any rule without knowing its type
 
 4. **Interface Segregation**: Interfaces are specific to their consumers
-
-5. **Dependency Inversion**: High-level modules depend on abstractions, not concrete implementations
-
----
-
-## Draft 1 (MVP) Scope
-
-### Core Features
-- Individual file uploads (drag & drop)
-- 4 rule types: Casing, Prefix/Suffix, Sequential Numbering, Find & Replace
-- Rule management (add, edit, delete, reorder via drag & drop)
-- Live preview (before/after filenames)
-- Undo/Reset functionality
-- Download renamed files as ZIP
-- Error handling (duplicates, invalid characters)
-- Responsive UI with Tailwind CSS
-- Dark/Light mode toggle
-- Accessibility (WCAG AA compliance)
-
-### Future Enhancements (Post-Draft 1)
-- ZIP upload with extraction
-- Regex support in Find & Replace
-- Dynamic variables ({date}, {time}, {counter})
-- Templates/History
-- Advanced text manipulation
-- Cloud integrations
-
----
-
-## Detailed Phase Breakdown
-
-### **PHASE 1: Project Foundation & Setup** ✅
-**Goal**: Set up development environment with proper architecture
-
-**Tasks:**
-1. Create monorepo structure (client + server)
-2. Initialize Vite + React + TypeScript frontend
-3. Configure Tailwind CSS with dark mode support
-4. Initialize Express + TypeScript backend
-5. Set up ESLint and Prettier
-6. Create base folder structure following SOLID principles
-7. Configure environment files
-
-**Deliverables:**
-- Complete project structure
-- Running dev servers (frontend + backend)
-- Tailwind CSS configured
-- TypeScript compilation working
-- ESLint + Prettier configured
-
----
-
-### **PHASE 2: Core Data Models & State Management**
-**Goal**: Define all data structures and state management
-
-**Tasks:**
-1. **Type Definitions**
-   ```typescript
-   // File types
-   interface UploadedFile {
-     id: string;
-     originalName: string;
-     newName: string;
-     size: number;
-     type: string;
-     file: File;
-   }
-
-   // Rule types
-   enum RuleType {
-     CASING = 'casing',
-     PREFIX = 'prefix',
-     SUFFIX = 'suffix',
-     NUMBERING = 'numbering',
-     FIND_REPLACE = 'findReplace'
-   }
-
-   interface BaseRule {
-     id: string;
-     type: RuleType;
-     enabled: boolean;
-   }
-   ```
-
-2. **State Management**
-   - `useFileStore`: File management
-   - `useRuleStore`: Rules management
-   - `useHistoryStore`: Undo/redo functionality
-
-3. **Service Layer**
-   - `RenameService`: Apply renaming logic
-   - `FileService`: File validation
-   - `ZipService`: ZIP generation
-
-**Deliverables:**
-- All TypeScript interfaces/types defined
-- Zustand stores configured
-- Service layer architecture complete
-- Type safety across frontend and backend
-
----
-
-### **PHASE 3: File Upload System**
-**Goal**: Implement drag & drop file upload with validation
-
-**Tasks:**
-1. Drag & drop zone with visual feedback
-2. File input fallback for accessibility
-3. Upload progress indicator
-4. File list display with metadata
-5. Remove individual files functionality
-6. File validation (max 500 files, 100MB total)
-7. Backend upload endpoint with multer
-8. Temporary storage management
-
-**Deliverables:**
-- Working drag & drop upload
-- File validation with user feedback
-- Backend upload processing
-- Accessible upload interface
-
----
-
-### **PHASE 4: Rule Engine - Foundation**
-**Goal**: Build modular rule engine following Open/Closed Principle
-
-**Tasks:**
-1. **Abstract Rule Processor**
-   ```typescript
-   abstract class RuleProcessor {
-     abstract apply(filename: string, config: any): string;
-     protected sanitize(filename: string): string { }
-   }
-
-   class CasingRuleProcessor extends RuleProcessor { }
-   class PrefixRuleProcessor extends RuleProcessor { }
-   class NumberingRuleProcessor extends RuleProcessor { }
-   class FindReplaceRuleProcessor extends RuleProcessor { }
-   ```
-
-2. **Rule Factory**
-   ```typescript
-   class RuleFactory {
-     static createProcessor(rule: Rule): RuleProcessor { }
-   }
-   ```
-
-3. Rule pipeline (sequential processing)
-4. Rule UI components
-
-**Deliverables:**
-- Modular rule processor architecture
-- Rule factory implementation
-- Rule pipeline working
-- Rule UI components
-
----
-
-### **PHASE 5: Rule Types Implementation**
-**Goal**: Implement all 4 core rule types
-
-**Tasks:**
-1. **Casing Rule**
-   - snake_case, camelCase, PascalCase, UPPERCASE, lowercase
-   - Handle special characters and numbers
-
-2. **Prefix/Suffix Rule**
-   - Add prefix before filename
-   - Add suffix before extension
-   - Input validation
-
-3. **Sequential Numbering**
-   - Custom start value
-   - Padding options (001, 01, 1)
-   - Placement (prefix vs suffix)
-
-4. **Find & Replace**
-   - Text search and replace
-   - Case-sensitive toggle
-   - Replace all vs first occurrence
-
-5. Configuration UI for each rule type
-
-**Deliverables:**
-- All 4 rule types working
-- Configuration UI for each
-- Input validation
-- Unit tests for processors
-
----
-
-### **PHASE 6: Rule Management & Drag-and-Drop**
-**Goal**: Implement rule ordering and management
-
-**Tasks:**
-1. Drag & drop with @dnd-kit/sortable
-2. Visual feedback during drag
-3. Update rule order in state
-4. Rule actions: edit, delete, enable/disable, duplicate
-5. Trigger preview recalculation on changes
-6. Keyboard shortcuts
-7. Accessibility announcements
-
-**Deliverables:**
-- Drag-to-reorder rules working
-- Add/edit/delete rules working
-- Rule state properly managed
-- Accessible rule management
-
----
-
-### **PHASE 7: Live Preview System**
-**Goal**: Real-time preview of renamed files
-
-**Tasks:**
-1. Side-by-side Before/After table
-2. Highlight changed parts of filenames
-3. Apply all rules in order to each file
-4. Handle duplicate name conflicts
-5. Sanitize invalid characters
-6. Performance optimization:
-   - Debounce preview calculations
-   - Memoize rule processors
-   - Virtual scrolling for 100+ files
-7. Preview controls (toggle, filter, search)
-
-**Deliverables:**
-- Real-time preview working
-- Performance optimized
-- Preview controls functional
-- Handles large file counts
-
----
-
-### **PHASE 8: Undo/Reset Functionality**
-**Goal**: Implement undo/redo and reset features
-
-**Tasks:**
-1. History store (track rule changes)
-2. Undo/redo stack implementation
-3. Maximum history size (50 actions)
-4. Update preview on undo/redo
-5. Reset all rules functionality
-6. Confirmation dialog before reset
-7. Keyboard shortcuts (Ctrl+Z, Ctrl+Shift+Z)
-
-**Deliverables:**
-- Undo/redo working
-- Reset functionality complete
-- History properly managed
-- Keyboard shortcuts working
-
----
-
-### **PHASE 9: Download & ZIP Generation**
-**Goal**: Process files and generate downloadable ZIP
-
-**Tasks:**
-1. Backend `/api/process` endpoint
-2. Apply all rules server-side
-3. Handle duplicate names (append _1, _2, etc.)
-4. Generate ZIP with adm-zip
-5. Rename files without modifying content
-6. Frontend download button
-7. Show processing progress
-8. Temp file cleanup
-
-**Deliverables:**
-- ZIP generation working
-- Download triggered successfully
-- Temp file cleanup implemented
-- Error handling complete
-
----
-
-### **PHASE 10: Error Handling & Edge Cases**
-**Goal**: Handle all edge cases from PRD
-
-**Tasks:**
-1. **Duplicate Filename Handling**
-   - Auto-append _1, _2, _3
-   - Show warning in preview
-
-2. **Invalid Character Sanitization**
-   - Remove /:*?"<>| characters
-   - Show sanitization in preview
-
-3. **Empty/Invalid States**
-   - Empty upload validation
-   - No files selected error
-   - Network error handling
-
-4. **Conflict Detection**
-   - Warn if Find & Replace deletes full name
-   - Prevent processing with errors
-
-5. **Progress & Loading States**
-   - Upload progress bar
-   - Processing indicator
-   - Timeout handling
-
-**Deliverables:**
-- All edge cases handled
-- Clear error messages
-- User-friendly warnings
-- Robust error recovery
-
----
-
-### **PHASE 11: UI/UX Polish & Accessibility**
-**Goal**: Create beautiful, accessible interface
-
-**Tasks:**
-1. **Landing Page**
-   - Hero section with CTA
-   - Feature highlights
-   - Demo GIF/video
-   - Responsive design
-
-2. **Main Interface**
-   - Clean dashboard layout
-   - Color-coded rule cards
-   - Smooth transitions
-   - Loading skeletons
-
-3. **Dark/Light Mode**
-   - Toggle switch in header
-   - Persist in localStorage
-   - Proper contrast ratios
-
-4. **Accessibility (WCAG 2.1 AA)**
-   - Semantic HTML
-   - ARIA labels and roles
-   - Keyboard navigation
-   - Focus indicators
-   - Screen reader support
-   - Color contrast compliance
-
-5. **Responsive Design**
-   - Mobile-first approach
-   - Breakpoints: mobile, tablet, desktop
-   - Touch-friendly targets (min 44px)
-
-**Deliverables:**
-- Polished UI design
-- Dark/light mode working
-- WCAG AA compliant
-- Fully responsive
-
----
-
-### **PHASE 12: Testing & Quality Assurance**
-**Goal**: Ensure reliability and quality
-
-**Tasks:**
-1. **Unit Tests**
-   - Test all rule processors
-   - Test utility functions
-   - Test state management
-   - Test file validation
-
-2. **Integration Tests**
-   - Test API endpoints
-   - Test file upload flow
-   - Test ZIP generation
-   - Test error scenarios
-
-3. **Manual Testing**
-   - Test with various file types
-   - Test with large file counts
-   - Test edge cases
-   - Cross-browser testing
-   - Accessibility audit
-
-4. **Performance Testing**
-   - Test with 500 files
-   - Test with 100MB total size
-   - Measure preview calculation time
-   - Optimize bottlenecks
-
-**Deliverables:**
-- Unit test coverage >80%
-- Integration tests passing
-- Manual test cases completed
-- Performance benchmarks met
-
----
-
-### **PHASE 13: Documentation & Final Polish**
-**Goal**: Complete documentation and prepare for launch
-
-**Tasks:**
-1. **Code Documentation**
-   - JSDoc comments
-   - README for client and server
-   - Architecture documentation
-   - API documentation
-
-2. **User Documentation**
-   - User guide / help section
-   - FAQ section
-   - Tooltips for UI elements
-   - Example use cases
-
-3. **Developer Documentation**
-   - Setup instructions
-   - Development workflow
-   - Build and deployment guide
-   - Contributing guidelines
-
-4. **Final Polish**
-   - Code cleanup
-   - Remove console.logs
-   - Optimize bundle size
-   - Security audit
-
-**Deliverables:**
-- Complete documentation
-- Clean, production-ready code
-- User guide complete
-- Ready for deployment
-
----
-
-## Timeline Summary
-
-| Phase | Focus Area | Duration | Priority |
-|-------|-----------|----------|----------|
-| 1 | Project Setup | 1-2 days | Critical |
-| 2 | Data Models & State | 1 day | Critical |
-| 3 | File Upload | 2-3 days | Critical |
-| 4 | Rule Engine Foundation | 2 days | Critical |
-| 5 | Rule Types Implementation | 3-4 days | Critical |
-| 6 | Rule Management & DnD | 2 days | High |
-| 7 | Live Preview | 2-3 days | Critical |
-| 8 | Undo/Reset | 1-2 days | High |
-| 9 | Download & ZIP | 2 days | Critical |
-| 10 | Error Handling | 2 days | High |
-| 11 | UI/UX Polish | 3-4 days | High |
-| 12 | Testing & QA | 3-4 days | High |
-| 13 | Documentation | 1-2 days | Medium |
-
-**Total Estimated Timeline: 3-4 weeks for Draft 1 MVP**
+   - Each rule type has its own config interface
+   - Type-safe union types prevent invalid configurations
+
+5. **Dependency Inversion**: High-level modules depend on abstractions
+   - `RulePipeline` depends on `RuleProcessor` abstraction, not concrete implementations
+   - `RenameService` uses `RulePipeline` without knowing processor details
 
 ---
 
 ## Key Architecture Decisions
 
-### Frontend Architecture
-- **State Management**: Zustand for simplicity and performance
-- **Styling**: Tailwind CSS for rapid development
-- **Drag & Drop**: @dnd-kit for accessibility
-- **File Handling**: Client-side processing with Web APIs
-- **Routing**: React Router (if multi-page needed)
+### Client-Only Architecture
+- **All Processing Client-Side**: Files never leave the user's browser
+- **No Backend Required**: Simplifies deployment and enhances privacy
+- **Web APIs**: FileReader API, Blob API, download via FileSaver
+- **ZIP Generation**: JSZip library for creating ZIP files in-browser
 
-### Backend Architecture
-- **File Uploads**: Multer with file size/count limits
-- **Temp Storage**: Session-based, auto-cleanup
-- **ZIP Generation**: adm-zip for server-side processing
-- **Security**: Helmet, CORS, input sanitization
+### State Management
+- **Zustand**: Lightweight, simple API, excellent TypeScript support
+- **Reactive Updates**: Components automatically re-render on state changes
+- **Computed Values**: Preview automatically recalculates when rules or files change
 
-### Rule Engine Design
-- **Extensibility**: Abstract base class for new rule types
-- **Modularity**: Each rule is a separate processor
-- **Pipeline**: Sequential processing with error handling
-- **Validation**: Input validation at each stage
+### Styling
+- **Tailwind CSS v4**: Utility-first CSS framework
+- **Dark Mode**: Class-based dark mode (toggle in header)
+- **Responsive**: Mobile-first approach
+- **Tailwind Plugin**: Integrated via `@tailwindcss/vite` in `vite.config.ts`
+
+### Drag & Drop
+- **@dnd-kit**: Accessible, performant drag & drop library
+- **Sortable**: Rules can be reordered via drag & drop
+- **Touch Support**: Works on mobile devices
+
+### File Handling
+- **File API**: Browser File objects stored in Zustand
+- **No Server Upload**: Files processed directly in browser
+- **Validation**: Size, count, and type validation before processing
+
+---
+
+## Type System
+
+### Core Types
+
+#### File Types (`src/types/File.ts`)
+```typescript
+interface UploadedFile {
+  id: string;                 // Unique identifier (crypto.randomUUID())
+  originalName: string;       // Original filename
+  newName: string;            // Filename after applying rules
+  size: number;               // File size in bytes
+  type: string;               // MIME type
+  file: File;                 // Browser File object
+  hasConflict?: boolean;      // Duplicate name detected
+  resolvedName?: string;      // Auto-resolved name (e.g., "file_1.txt")
+}
+
+const FILE_UPLOAD_LIMITS = {
+  MAX_FILES: 500,
+  MAX_TOTAL_SIZE: 100 * 1024 * 1024,  // 100MB
+  MAX_FILE_SIZE: 50 * 1024 * 1024,    // 50MB
+}
+```
+
+#### Rule Types (`src/types/Rule.ts`)
+```typescript
+enum RuleType {
+  CASING = 'casing',
+  PREFIX = 'prefix',
+  SUFFIX = 'suffix',
+  NUMBERING = 'numbering',
+  FIND_REPLACE = 'findReplace',
+}
+
+enum CasingType {
+  SNAKE_CASE = 'snake_case',
+  CAMEL_CASE = 'camelCase',
+  PASCAL_CASE = 'PascalCase',
+  UPPER_CASE = 'UPPERCASE',
+  LOWER_CASE = 'lowercase',
+}
+
+interface BaseRule {
+  id: string;
+  type: RuleType;
+  enabled: boolean;
+  name?: string;
+}
+
+// Specific rule types extend BaseRule
+type Rule = CasingRule | PrefixRule | SuffixRule | NumberingRule | FindReplaceRule;
+```
 
 ---
 
 ## Common Patterns
 
 ### Adding a New Rule Type
-1. Define type interface in `types/Rule.ts`
-2. Create processor class extending `RuleProcessor`
-3. Add to `RuleFactory`
-4. Create UI component for configuration
-5. Add to rule type enum
-6. Write unit tests
+
+1. **Define type interface** in `src/types/Rule.ts`
+   ```typescript
+   export interface MyNewRule extends BaseRule {
+     type: RuleType.MY_NEW_TYPE;
+     config: {
+       // Your config properties
+     };
+   }
+
+   // Add to union type
+   export type Rule = /* ... */ | MyNewRule;
+   ```
+
+2. **Create processor class** in `src/services/rule-engine/`
+   ```typescript
+   export class MyNewRuleProcessor extends RuleProcessor<MyNewRule['config']> {
+     apply(filename: string, config: MyNewRule['config']): string {
+       // Implementation
+       return this.sanitize(newFilename);
+     }
+   }
+   ```
+
+3. **Add to RuleFactory** in `src/services/rule-engine/RuleFactory.ts`
+   ```typescript
+   case RuleType.MY_NEW_TYPE:
+     return new MyNewRuleProcessor();
+   ```
+
+4. **Create UI component** in `src/components/rules/`
+   ```typescript
+   export function MyNewRuleConfig({ rule, onChange }: RuleConfigProps<MyNewRule>) {
+     // Config UI
+   }
+   ```
+
+5. **Add to RuleConfigPanel** in `src/components/rules/RuleConfigPanel.tsx`
+
+6. **Add to AddRuleDropdown** in `src/components/rules/AddRuleDropdown.tsx`
 
 ### State Management Pattern
+
 ```typescript
 // Define store
-const useStore = create<State>((set) => ({
+export const useMyStore = create<MyState>((set, get) => ({
   items: [],
-  addItem: (item) => set((state) => ({ items: [...state.items, item] })),
-  // ...
+
+  addItem: (item) =>
+    set((state) => ({ items: [...state.items, item] })),
+
+  removeItem: (id) =>
+    set((state) => ({ items: state.items.filter(i => i.id !== id) })),
 }));
 
 // Use in components
-const items = useStore((state) => state.items);
-const addItem = useStore((state) => state.addItem);
+function MyComponent() {
+  const items = useMyStore((state) => state.items);
+  const addItem = useMyStore((state) => state.addItem);
+
+  return <button onClick={() => addItem(newItem)}>Add</button>;
+}
 ```
 
 ### Service Pattern
-```typescript
-// Single responsibility, pure functions
-export class FileService {
-  static validateFile(file: File): ValidationResult {
-    // Validation logic
-  }
 
-  static sanitizeFilename(filename: string): string {
-    // Sanitization logic
+```typescript
+// Single responsibility, static methods for pure functions
+export class MyService {
+  static processData(input: Input): Output {
+    // Pure logic, no side effects
+    return result;
   }
+}
+```
+
+---
+
+## File Processing Flow
+
+1. **Upload**: User drags/drops files → `FileUploadZone` → `useFileUpload` hook
+2. **Validation**: `FileService.validateFiles()` checks limits
+3. **Storage**: Files stored in `useFileStore` as `UploadedFile[]`
+4. **Rule Application**:
+   - User adds/modifies rules → `useRuleStore`
+   - Rules applied via `RenameService.applyRules()`
+   - Uses `RulePipeline.applyRulesToBatch()` for processing
+5. **Preview**: Updated `newName` displayed in `FileList`
+6. **Download**: (To be implemented)
+   - Create ZIP with JSZip
+   - Rename files in ZIP
+   - Trigger download with FileSaver
+
+---
+
+## Zustand Stores
+
+### useFileStore (`src/store/useFileStore.ts`)
+```typescript
+{
+  files: UploadedFile[];
+  totalSize: number;
+  addFile: (file: UploadedFile) => void;
+  addFiles: (files: UploadedFile[]) => void;
+  removeFile: (fileId: string) => void;
+  updateFileName: (fileId: string, newName: string) => void;
+  clearFiles: () => void;
+  updateFileConflict: (fileId: string, hasConflict: boolean, resolvedName?: string) => void;
+  getFileById: (fileId: string) => UploadedFile | undefined;
+}
+```
+
+### useRuleStore (`src/store/useRuleStore.ts`)
+```typescript
+{
+  rules: Rule[];
+  addRule: (rule: Rule) => void;
+  updateRule: (ruleId: string, updates: Partial<Rule>) => void;
+  deleteRule: (ruleId: string) => void;
+  toggleRule: (ruleId: string) => void;
+  reorderRules: (sourceIndex: number, destinationIndex: number) => void;
+  clearRules: () => void;
+}
+```
+
+### useUIStore (`src/store/useUIStore.ts`)
+```typescript
+{
+  darkMode: boolean;
+  loading: boolean;
+  error: string | null;
+  success: string | null;
+  setDarkMode: (enabled: boolean) => void;
+  setLoading: (loading: boolean) => void;
+  setError: (error: string | null) => void;
+  setSuccess: (success: string | null) => void;
+  clearMessages: () => void;
 }
 ```
 
@@ -607,94 +435,118 @@ export class FileService {
 
 ## Security Considerations
 
-1. **File Upload**: Validate file types, sizes, and count limits
-2. **Filename Sanitization**: Remove dangerous characters (/:*?"<>|)
-3. **Path Traversal**: Prevent directory traversal attacks
-4. **XSS Prevention**: Sanitize user input in Find & Replace
-5. **CORS**: Configure properly for API endpoints
-6. **Temp Files**: Auto-cleanup to prevent disk filling
-7. **Rate Limiting**: Prevent abuse of upload endpoint
+1. **Client-Side Processing**: Files never uploaded to a server (privacy-first)
+2. **Filename Sanitization**: Remove dangerous characters (`:*?"<>|/`)
+3. **XSS Prevention**: Sanitize user input in Find & Replace rules
+4. **No Path Traversal**: Files processed without directory paths
+5. **Size Limits**: Prevent browser crashes (100MB total, 50MB per file)
+6. **File Count Limits**: Max 500 files to prevent memory issues
 
 ---
 
 ## Accessibility Guidelines
 
 1. **Keyboard Navigation**: All features accessible via keyboard
-2. **Screen Readers**: ARIA labels and live regions
-3. **Focus Management**: Visible focus indicators
+   - Tab through all interactive elements
+   - Drag & drop has keyboard alternatives
+2. **Screen Readers**:
+   - ARIA labels on all buttons/inputs
+   - ARIA live regions for success/error messages
+   - Semantic HTML (`<button>`, `<input>`, etc.)
+3. **Focus Management**: Visible focus indicators (Tailwind focus: utilities)
 4. **Color Contrast**: WCAG AA compliance (4.5:1 for text)
 5. **Touch Targets**: Minimum 44x44px for mobile
 6. **Error Messages**: Clear, descriptive, announced to screen readers
-7. **Semantic HTML**: Use proper HTML5 elements
+7. **Dark Mode**: Proper contrast in both light and dark themes
 
 ---
 
 ## Performance Optimization
 
-1. **Virtual Scrolling**: For large file lists (>100 files)
-2. **Debouncing**: Preview calculations debounced by 300ms
-3. **Memoization**: React.memo for expensive components
-4. **Code Splitting**: Lazy load routes and heavy components
-5. **Bundle Optimization**: Tree shaking, minification
-6. **Image Optimization**: For landing page assets
+1. **Debouncing**: Preview calculations can be debounced (300ms)
+2. **Memoization**: React.memo for expensive components
+3. **Virtual Scrolling**: For large file lists (>100 files) - to be implemented
+4. **Lazy Loading**: Code splitting for routes (if needed)
+5. **Bundle Optimization**: Vite automatically tree-shakes and minifies
+6. **Zustand**: Minimal re-renders (only components using changed state)
 
 ---
 
 ## Testing Strategy
 
-### Unit Tests
-- All rule processors
-- Utility functions
-- State management
-- Validation logic
+### Unit Tests (To be implemented)
+- All rule processors (`*.test.ts`)
+- Utility functions (`fileHelpers`, `fileValidation`, `fileSanitization`)
+- State management (Zustand stores)
+- File validation logic
 
-### Integration Tests
-- API endpoints
+### Integration Tests (To be implemented)
+- Rule pipeline with multiple rules
 - File upload flow
 - ZIP generation
 - Error scenarios
 
-### E2E Tests (Optional)
-- Complete user flows
-- Cross-browser compatibility
-
----
-
-## Success Criteria for Draft 1
-
+### Manual Testing Checklist
 - [ ] Upload files via drag & drop
-- [ ] All 4 rule types functional
-- [ ] Rules can be reordered via drag & drop
-- [ ] Live preview accurate
-- [ ] Undo/Reset works
-- [ ] Download renamed files as ZIP
-- [ ] Edge cases handled (duplicates, invalid chars)
-- [ ] Responsive UI (mobile, tablet, desktop)
-- [ ] Accessible (WCAG AA)
-- [ ] Dark/light mode
-- [ ] No security vulnerabilities
-- [ ] Performance: <1s preview for 100 files
+- [ ] Upload files via click
+- [ ] Add/edit/delete rules
+- [ ] Reorder rules via drag & drop
+- [ ] Preview updates in real-time
+- [ ] Duplicate filename handling
+- [ ] Invalid character sanitization
+- [ ] Dark/light mode toggle
+- [ ] Responsive design (mobile, tablet, desktop)
+- [ ] Keyboard navigation
+- [ ] Screen reader compatibility
 
 ---
 
-## Future Roadmap (Post-Draft 1)
+## Common Development Tasks
 
-### Phase 2 Features
-- ZIP upload with extraction
-- Regex support in Find & Replace
-- Dynamic variables ({date}, {time}, {counter})
-- Date metadata extraction (EXIF)
+### Running the Development Server
+```bash
+cd client
+npm run dev
+```
+The app will be available at `http://localhost:5173`
 
-### Phase 3 Features
-- Templates/History (save rule sets)
-- Cloud integration (Google Drive, Dropbox)
-- Rule sharing (export/import)
+### Building for Production
+```bash
+cd client
+npm run build
+```
+Output will be in `client/dist/`
 
-### Phase 4 Features
-- CLI version for developers
-- API access for automation
-- Batch processing API
-- Webhook support
+### Linting Code
+```bash
+cd client
+npm run lint
+```
+
+### Adding a Dependency
+```bash
+cd client
+npm install <package-name>
+```
+
+### Dark Mode Toggle
+Dark mode state is stored in `useUIStore` and persisted to `localStorage`. The HTML root element gets the `dark` class applied/removed, which activates Tailwind's dark mode variants.
+
+```typescript
+// In App.tsx
+const { darkMode, setDarkMode } = useUIStore();
+
+// Initialize from localStorage or system preference
+useEffect(() => {
+  const saved = localStorage.getItem('renameflow-dark-mode');
+  if (saved !== null) {
+    setDarkMode(saved === 'true');
+  } else {
+    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    setDarkMode(prefersDark);
+  }
+}, [setDarkMode]);
+```
 
 ---
 
@@ -702,23 +554,133 @@ export class FileService {
 
 ### Dev Server Won't Start
 - Check Node.js version (requires 18+)
-- Delete node_modules and reinstall
-- Check for port conflicts
+- Delete `node_modules` and run `npm install`
+- Check for port conflicts (default: 5173)
 
 ### TypeScript Errors
 - Run `npm run build` to see all errors
-- Check tsconfig.json configuration
-- Ensure types are installed
+- Check `tsconfig.json` configuration
+- Ensure all types are properly imported
 
 ### Tailwind Not Working
-- Check postcss.config.js exists
-- Verify @tailwind directives in index.css
-- Check content paths in tailwind.config.js
+- Verify `@tailwindcss/vite` is in `vite.config.ts`
+- Check `index.css` for `@import "tailwindcss";`
+- Restart dev server after config changes
+
+### Dark Mode Not Working
+- Check if `dark` class is on `<html>` element
+- Verify Tailwind config has `darkMode: 'class'`
+- Check `useUIStore` for dark mode state
+
+### Drag & Drop Not Working
+- Ensure `@dnd-kit/core` and `@dnd-kit/sortable` are installed
+- Check browser console for errors
+- Verify `DndContext` wraps draggable components
 
 ---
 
-## Contact & Resources
+## File Naming Conventions
+
+- **Components**: PascalCase (`FileUploadZone.tsx`)
+- **Utilities**: camelCase (`fileHelpers.ts`)
+- **Types**: PascalCase (`Rule.ts`)
+- **Stores**: camelCase with `use` prefix (`useFileStore.ts`)
+- **Services**: PascalCase (`RenameService.ts`)
+- **Hooks**: camelCase with `use` prefix (`useFileUpload.ts`)
+
+---
+
+## Code Style Guidelines
+
+1. **Imports**: Organize imports in this order:
+   - React imports
+   - Third-party libraries
+   - Internal types
+   - Internal components/services/hooks
+   - Relative imports
+
+2. **TypeScript**:
+   - Use interfaces for object shapes
+   - Use type for unions and computed types
+   - Prefer type inference where obvious
+   - Always type function parameters and return values
+
+3. **React**:
+   - Functional components only
+   - Use hooks (no class components)
+   - Extract complex logic to custom hooks
+   - Keep components focused and small
+
+4. **Comments**:
+   - Use JSDoc for functions and classes
+   - Explain *why*, not *what*
+   - Add comments for complex logic only
+
+5. **Tailwind**:
+   - Group utilities logically (layout, colors, typography)
+   - Use dark mode variants: `dark:bg-gray-800`
+   - Responsive utilities: `md:flex-row`
+
+---
+
+## Success Criteria for MVP (Draft 1)
+
+- [x] Upload files via drag & drop
+- [x] All 5 rule types functional (Casing, Prefix, Suffix, Numbering, Find & Replace)
+- [x] Rules can be added, edited, deleted
+- [x] Rules can be reordered via drag & drop
+- [x] Live preview updates on rule changes
+- [x] Duplicate filename detection and resolution
+- [ ] Download renamed files as ZIP (In Progress)
+- [ ] Undo/Reset functionality
+- [ ] Edge cases handled (invalid chars, empty names)
+- [x] Responsive UI (mobile, tablet, desktop)
+- [ ] Accessible (WCAG AA)
+- [x] Dark/light mode toggle
+- [ ] No security vulnerabilities
+- [ ] Performance: <1s preview for 100 files
+
+---
+
+## Future Enhancements (Post-MVP)
+
+### Phase 2 Features
+- ZIP upload with extraction
+- Regex support in Find & Replace
+- Dynamic variables (`{date}`, `{time}`, `{counter}`)
+- Date metadata extraction (EXIF)
+
+### Phase 3 Features
+- Templates/History (save rule sets)
+- Import/Export rule configurations
+- Batch processing presets
+
+### Phase 4 Features
+- Browser extension
+- CLI version for developers
+- API for automation (if backend added)
+
+---
+
+## Resources
 
 - **PRD**: See `prd-rename flow.txt` in project root
-- **Repository**: [GitHub link to be added]
-- **Documentation**: See README files in client/ and server/
+- **Structure**: See `structure.txt` for detailed file documentation
+- **React Docs**: https://react.dev/
+- **Vite Docs**: https://vitejs.dev/
+- **Tailwind CSS v4**: https://tailwindcss.com/
+- **Zustand**: https://github.com/pmndrs/zustand
+- **@dnd-kit**: https://dndkit.com/
+- **TypeScript**: https://www.typescriptlang.org/
+
+---
+
+## Contact & Deployment
+
+- **Repository**: RenameFlow (GitHub)
+- **Deployment**: Static hosting (Vercel, Netlify, GitHub Pages)
+- **No Backend Required**: Deploy as static site
+
+---
+
+**Last Updated**: November 2024 (Phase 1-4 Complete)

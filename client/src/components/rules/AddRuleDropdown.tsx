@@ -43,7 +43,7 @@ export function AddRuleDropdown() {
       case RuleType.CASING:
         newRule = {
           type: RuleType.CASING,
-          caseType: CasingType.LOWER_CASE,
+          config: { casingType: CasingType.LOWER_CASE },
           enabled: true,
         } as Omit<CasingRule, 'id' | 'name'>;
         break;
@@ -51,7 +51,7 @@ export function AddRuleDropdown() {
       case RuleType.PREFIX:
         newRule = {
           type: RuleType.PREFIX,
-          prefix: '',
+          config: { text: '' },
           enabled: true,
         } as Omit<PrefixRule, 'id' | 'name'>;
         break;
@@ -59,7 +59,7 @@ export function AddRuleDropdown() {
       case RuleType.SUFFIX:
         newRule = {
           type: RuleType.SUFFIX,
-          suffix: '',
+          config: { text: '' },
           enabled: true,
         } as Omit<SuffixRule, 'id' | 'name'>;
         break;
@@ -67,9 +67,11 @@ export function AddRuleDropdown() {
       case RuleType.NUMBERING:
         newRule = {
           type: RuleType.NUMBERING,
-          startValue: 1,
-          padding: 3,
-          placement: NumberingPlacement.SUFFIX,
+          config: {
+            start: 1,
+            padding: 3,
+            placement: NumberingPlacement.SUFFIX,
+          },
           enabled: true,
         } as Omit<NumberingRule, 'id' | 'name'>;
         break;
@@ -77,10 +79,12 @@ export function AddRuleDropdown() {
       case RuleType.FIND_REPLACE:
         newRule = {
           type: RuleType.FIND_REPLACE,
-          find: '',
-          replace: '',
-          caseSensitive: false,
-          replaceAll: true,
+          config: {
+            find: '',
+            replace: '',
+            caseSensitive: false,
+            replaceAll: true,
+          },
           enabled: true,
         } as Omit<FindReplaceRule, 'id' | 'name'>;
         break;

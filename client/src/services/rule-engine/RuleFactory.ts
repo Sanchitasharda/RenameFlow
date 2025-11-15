@@ -44,33 +44,6 @@ export class RuleFactory {
    * Extracts the rule-specific config based on type
    */
   static getConfig(rule: Rule): any {
-    switch (rule.type) {
-      case RuleType.CASING:
-        return { caseType: rule.caseType };
-
-      case RuleType.PREFIX:
-        return { prefix: rule.prefix };
-
-      case RuleType.SUFFIX:
-        return { suffix: rule.suffix };
-
-      case RuleType.NUMBERING:
-        return {
-          startValue: rule.startValue,
-          padding: rule.padding,
-          placement: rule.placement,
-        };
-
-      case RuleType.FIND_REPLACE:
-        return {
-          find: rule.find,
-          replace: rule.replace,
-          caseSensitive: rule.caseSensitive,
-          replaceAll: rule.replaceAll,
-        };
-
-      default:
-        return {};
-    }
+    return rule.config;
   }
 }
