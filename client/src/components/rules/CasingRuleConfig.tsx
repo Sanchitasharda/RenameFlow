@@ -39,13 +39,9 @@ export function CasingRuleConfig({ rule }: CasingRuleConfigProps) {
     },
   ];
 
-  const handleCaseTypeChange = (casingType: CasingType) => {
+  const handleCaseTypeChange = (caseType: CasingType) => {
     updateRule(rule.id, {
-      ...rule,
-      config: {
-        ...rule.config,
-        casingType
-      }
+      config: { casingType: caseType },
     });
   };
 

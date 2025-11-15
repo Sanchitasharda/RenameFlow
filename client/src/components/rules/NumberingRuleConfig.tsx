@@ -11,12 +11,14 @@ interface NumberingRuleConfigProps {
  */
 export function NumberingRuleConfig({ rule }: NumberingRuleConfigProps) {
   const updateRule = useRuleStore((state) => state.updateRule);
-  const [startValue, setStartValue] = useState(rule.startValue);
-  const [padding, setPadding] = useState(rule.padding);
-  const [placement, setPlacement] = useState(rule.placement);
+  const [startValue, setStartValue] = useState(rule.config.start);
+  const [padding, setPadding] = useState(rule.config.padding);
+  const [placement, setPlacement] = useState(rule.config.placement);
 
   const handleSave = () => {
-    updateRule(rule.id, { ...rule, startValue, padding, placement });
+    updateRule(rule.id, {
+      config: { start: startValue, padding, placement },
+    });
   };
 
   const getPreviewNumber = () => {
