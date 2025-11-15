@@ -3,9 +3,15 @@
     "allow": [
       "Bash(npm run dev:*)",
       "Bash(gh repo create:*)",
-      "Bash(git add:*)"
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(git remote add:*)",
+      "Bash(git push:*)",
+      "Bash(timeout 5 bash -c \"cd ''''C:\\Users\\Sanchita Sharda\\projects\\rename-flow\\client'''' && npm run dev\")",
+      "Bash(taskkill:*)"
     ],
     "deny": [],
-    "ask": []
+    "ask": [],
+    "includeCoAuthoredBy": false
   }
 }

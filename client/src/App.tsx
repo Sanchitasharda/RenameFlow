@@ -1,12 +1,14 @@
 import { useEffect } from 'react';
 import { Layout } from './components/ui';
 import { FileUploadZone, FileList } from './components/upload';
-import { useUIStore } from './store';
+import { RuleList } from './components/rules';
+import { useUIStore, useRuleStore } from './store';
 import { useFileUpload } from './hooks/useFileUpload';
 
 function App() {
   const { darkMode, setDarkMode, error, success, clearMessages } = useUIStore();
   const { files, totalSize, handleInputChange, handleDrop, handleClearAll } = useFileUpload();
+  const rules = useRuleStore((state) => state.rules);
 
   // Initialize dark mode on mount
   useEffect(() => {
@@ -121,6 +123,13 @@ function App() {
         {/* File List */}
         <FileList files={files} totalSize={totalSize} onClearAll={handleClearAll} />
 
+        {/* Rule Management - shown when files are uploaded */}
+        {files.length > 0 && (
+          <div className="mt-8">
+            <RuleList />
+          </div>
+        )}
+
         {/* Features Info (shown when no files) */}
         {files.length === 0 && (
           <div className="mt-12">
@@ -154,7 +163,7 @@ function App() {
 
         {/* Status Info */}
         <div className="text-center text-sm text-gray-500 dark:text-gray-400 pt-8">
-          <p>✅ Phase 3 Complete - File Upload System Ready</p>
+          <p>✅ Phase 4 Complete - Rule Engine Foundation Ready</p>
         </div>
       </div>
     </Layout>
