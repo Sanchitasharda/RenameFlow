@@ -11,10 +11,12 @@ interface PrefixRuleConfigProps {
  */
 export function PrefixRuleConfig({ rule }: PrefixRuleConfigProps) {
   const updateRule = useRuleStore((state) => state.updateRule);
-  const [prefix, setPrefix] = useState(rule.prefix);
+  const [prefix, setPrefix] = useState(rule.config.text);
 
   const handleSave = () => {
-    updateRule(rule.id, { ...rule, prefix });
+    updateRule(rule.id, {
+      config: { text: prefix },
+    });
   };
 
   return (

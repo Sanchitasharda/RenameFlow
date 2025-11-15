@@ -11,10 +11,12 @@ interface SuffixRuleConfigProps {
  */
 export function SuffixRuleConfig({ rule }: SuffixRuleConfigProps) {
   const updateRule = useRuleStore((state) => state.updateRule);
-  const [suffix, setSuffix] = useState(rule.suffix);
+  const [suffix, setSuffix] = useState(rule.config.text);
 
   const handleSave = () => {
-    updateRule(rule.id, { ...rule, suffix });
+    updateRule(rule.id, {
+      config: { text: suffix },
+    });
   };
 
   return (

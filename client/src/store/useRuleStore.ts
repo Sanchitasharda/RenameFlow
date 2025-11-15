@@ -6,10 +6,10 @@ interface RuleState {
   rules: Rule[];
 
   /** Add a new rule */
-  addRule: <T extends RuleType>(type: T, config: RuleConfig<T>) => void;
+  addRule: (rule: Omit<Rule, 'id' | 'name'>) => void;
 
   /** Update an existing rule */
-  updateRule: (ruleId: string, updates: Partial<Rule>) => void;
+  updateRule: (ruleId: string, updates: Partial<Omit<Rule, 'id' | 'type'>>) => void;
 
   /** Remove a rule by ID */
   removeRule: (ruleId: string) => void;
@@ -33,13 +33,11 @@ interface RuleState {
 export const useRuleStore = create<RuleState>((set, get) => ({
   rules: [],
 
-  addRule: (type, config) =>
+  addRule: (ruleWithoutId) =>
     set((state) => {
       const newRule: Rule = {
+        ...ruleWithoutId,
         id: crypto.randomUUID(),
-        type,
-        enabled: true,
-        config,
       } as Rule;
       return {
         rules: [...state.rules, newRule],
@@ -48,9 +46,20 @@ export const useRuleStore = create<RuleState>((set, get) => ({
 
   updateRule: (ruleId, updates) =>
     set((state) => ({
-      rules: state.rules.map((rule) =>
-        rule.id === ruleId ? { ...rule, ...updates } : rule
-      ),
+      rules: state.rules.map((rule) => {
+        if (rule.id !== ruleId) return rule;
+
+        // Merge config if provided
+        if ('config' in updates && updates.config) {
+          return {
+            ...rule,
+            ...updates,
+            config: { ...rule.config, ...updates.config },
+          } as Rule;
+        }
+
+        return { ...rule, ...updates } as Rule;
+      }),
     })),
 
   removeRule: (ruleId) =>

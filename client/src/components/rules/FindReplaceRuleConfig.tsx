@@ -11,13 +11,15 @@ interface FindReplaceRuleConfigProps {
  */
 export function FindReplaceRuleConfig({ rule }: FindReplaceRuleConfigProps) {
   const updateRule = useRuleStore((state) => state.updateRule);
-  const [find, setFind] = useState(rule.find);
-  const [replace, setReplace] = useState(rule.replace);
-  const [caseSensitive, setCaseSensitive] = useState(rule.caseSensitive);
-  const [replaceAll, setReplaceAll] = useState(rule.replaceAll);
+  const [find, setFind] = useState(rule.config.find);
+  const [replace, setReplace] = useState(rule.config.replace);
+  const [caseSensitive, setCaseSensitive] = useState(rule.config.caseSensitive);
+  const [replaceAll, setReplaceAll] = useState(rule.config.replaceAll);
 
   const handleSave = () => {
-    updateRule(rule.id, { ...rule, find, replace, caseSensitive, replaceAll });
+    updateRule(rule.id, {
+      config: { find, replace, caseSensitive, replaceAll },
+    });
   };
 
   return (
