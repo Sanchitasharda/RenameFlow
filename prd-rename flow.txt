@@ -1,0 +1,895 @@
+Product Requirements Document (PRD)
+Product Name
+RenameFlow ________________________________________
+1. Overview
+Purpose
+RenameFlow is a micro-tool designed to help users rename large batches of files quickly, accurately, and according to strict rule sets. It eliminates the repetitive manual process of renaming files and ensures consistency and accuracy across different file types.
+ Ideal for photographers, developers, designers, archivists, and researchers, the tool can handle hundreds of files at once with rule-based automation.
+________________________________________
+2. Target Users
+User Type	Primary Need	Example Use Case
+Photographers	Rename hundreds of photos based on event/date pattern	Convert IMG_001.jpg → wedding-2025-001.jpg
+Developers	Standardize asset names for deployment	Convert MyImage Final.png → my_image_final_v2.png
+Designers	Add version suffixes to design exports	homepage.png → homepage_v3.png
+Archivists / Researchers	Maintain naming consistency for stored data files	Report (Final).docx → report_final_2025_v2.docx
+________________________________________
+3. Key Objectives
+●	Allow batch renaming of uploaded files in seconds.
+
+●	Support multiple rule types that can be combined and ordered.
+
+●	Provide instant preview before processing.
+
+●	Generate a renamed ZIP file for quick download.
+
+●	Maintain file integrity — only filenames change, not file contents.
+
+●	Offer a clean, minimal, and fast web-based interface.
+
+________________________________________
+4. Core Features
+A. Upload System
+●	Upload Methods:
+
+○	Upload individual files (drag & drop)
+
+○	Upload a ZIP file containing files/folders
+
+●	Accepted File Types: All common file formats (images, docs, audio, etc.)
+
+●	Max Upload Limit: e.g., 500 files or 100MB total
+
+●	Auto-extraction: If a ZIP file is uploaded, it is extracted server-side for processing.
+
+________________________________________
+B. Rule Engine (Main Feature)
+Users can stack multiple rules in any order.
+ Each rule will apply sequentially to the filename (not file content).
+1. Casing Rules
+●	Convert file names to:
+
+○	snake_case → my_photo_file.jpg
+
+○	camelCase → myPhotoFile.jpg
+
+○	PascalCase → MyPhotoFile.jpg
+
+○	UPPERCASE → MY_PHOTO_FILE.JPG
+
+○	lowercase → my_photo_file.jpg
+
+2. Prefix / Suffix Rules
+●	Prefix: Add text before the filename (e.g., final_, 2025_)
+
+●	Suffix: Add text after filename but before extension (e.g., _v2, _draft)
+
+●	Support dynamic variables (optional future feature):
+
+○	{date}, {time}, {originalName}, {counter}
+
+3. Sequential Numbering
+●	Add incremental numbering to filenames:
+
+○	Pattern: photo-001.jpg, photo-002.jpg
+
+○	Custom start value (default 1)
+
+○	Custom padding (001, 01, 1)
+
+○	Placement options:
+
+■	Prefix numbering: 001_photo.jpg
+
+■	Suffix numbering: photo_001.jpg
+
+4. Find & Replace
+●	Find a specific word/substring and replace it with another.
+
+○	Example: draft → final
+
+○	Support regex-based replace for advanced users (optional advanced toggle)
+
+5. Custom Text Manipulation (optional future)
+●	Trim spaces or special characters
+
+●	Replace spaces with underscores or hyphens
+
+●	Remove duplicate underscores/hyphens
+
+________________________________________
+C. Rule Management
+●	Users can:
+
+○	Add, edit, or delete rules dynamically.
+
+○	Reorder rules via drag-and-drop to change the processing sequence.
+
+●	Rule Preview Panel shows how filenames will look after each applied rule.
+
+________________________________________
+D. Live Preview
+●	Displays a side-by-side list:
+
+○	Original Filename → New Filename
+
+●	Real-time updates as rules are added or modified.
+
+●	Option to toggle preview on/off for large datasets.
+
+________________________________________
+E. Download Process
+●	After applying all rules:
+
+○	User clicks “Generate ZIP”
+
+○	Server processes renaming logic.
+
+○	A downloadable ZIP file with renamed files is generated.
+
+●	The folder structure (if any) inside the uploaded ZIP remains preserved.
+
+________________________________________
+F. Undo / Reset
+●	Undo Last Action: Step back one rule at a time.
+
+●	Reset All Rules: Revert to original filenames.
+
+________________________________________
+G. History / Templates (Future Enhancement)
+●	Save frequently used rule sets as templates.
+
+○	Example: “Web Assets Naming”, “Photo Shoot Format”
+
+●	Reuse templates for faster renaming sessions.
+
+________________________________________
+5. Technical Overview
+Component	Description
+Frontend	React (for dynamic UI updates, rule configuration, and preview)
+Backend	Node.js with Express for file processing and ZIP generation
+File Handling	multer for file uploads, adm-zip or JSZip for extraction & compression
+Rule Engine	Modular renaming pipeline applying transformations in sequence
+Storage	Temporary in-memory or disk storage (files auto-deleted after session)
+Security	Input sanitization, filename validation, and temp file cleanup
+Deployment	Serverless-friendly (Vercel / AWS Lambda) or standard Node server
+________________________________________
+6. User Flow
+1.	Landing Page:
+
+○	CTA: “Upload Your Files”
+
+○	Optional short description + example GIF
+
+2.	Upload Screen:
+
+○	Drag & drop area / “Upload ZIP” button
+
+○	Shows list of uploaded files
+
+3.	Define Rules:
+
+○	Add rules using dropdown (“Add Rule” → choose type)
+
+○	Configure rule parameters (text fields, dropdowns, toggles)
+
+○	Drag rules to reorder
+
+4.	Preview:
+
+○	Side-by-side “Before → After” filenames
+
+○	Option to view 10, 50, or all
+
+5.	Process & Download:
+
+○	Click “Rename & Download”
+
+○	Tool generates and provides ZIP for download
+
+________________________________________
+8. Edge Cases & Error Handling
+Case	System Behavior
+Duplicate filenames after rules	Automatically append _1, _2, etc.
+Invalid filename characters	Auto-sanitize (remove `/:*?"<>
+Empty upload	Show “Please upload files” prompt
+Rule conflict (e.g., Find & Replace deletes full name)	Warn user before proceeding
+Large files or ZIPs	Show progress bar; limit file count
+________________________________________
+9. UI/UX Considerations
+●	Clean, minimalist dashboard-style layout
+
+●	Color-coded rule cards for clarity
+
+●	Real-time progress indicator during file processing
+
+●	Accessibility: keyboard shortcuts for rule reordering, dark/light mode toggle
+
+________________________________________
+10. Future Enhancements
+●	Cloud integration (Google Drive, Dropbox)
+
+●	Rule-sharing (export/import templates)
+
+●	CLI version for developers
+
+●	API access for automation workflows
+
+●	Advanced regex-based renaming
+
+●	Date metadata extraction (e.g., from photo EXIF)
+
+________________________________________
+Would you like me to next create a UI wireframe + workflow diagram for this PRD (upload → rule definition → preview → download)?
+ That would make it perfect for presenting to developers or as a hackathon/demo project proposal.
+
+
+
+
+
+ 📋 DRAFT 1 SCOPE - MVP Features
+
+  Based on the PRD and your requirements, here's what should be achievable in Draft 1:
+
+  ✅ Core Features for Draft 1
+
+  1. Upload System - Individual file uploads with drag & drop
+  2. Rule Engine - All 4 core rule types:
+    - Casing Rules (snake_case, camelCase, PascalCase, UPPERCASE, lowercase)
+    - Prefix/Suffix Rules
+    - Sequential Numbering (with custom start, padding, placement)
+    - Find & Replace (basic text replacement)
+  3. Rule Management - Add, edit, delete, and drag-to-reorder rules
+  4. Live Preview - Real-time before/after filename display
+  5. Undo/Reset - Undo last action & reset all rules
+  6. Download - Generate and download ZIP with renamed files
+  7. Error Handling - Duplicate names, invalid characters, empty uploads
+  8. Responsive UI - Tailwind CSS with accessibility features
+
+  ⏭️ Future Phases (Post-Draft 1)
+
+  - ZIP upload with extraction
+  - Regex support in Find & Replace
+  - Dynamic variables ({date}, {time}, {counter})
+  - Templates/History
+  - Advanced text manipulation
+  - Cloud integrations
+
+  ---
+  🛠️ PROJECT SETUP & DEPENDENCIES
+
+● 📦 Dependencies Breakdown
+
+  Frontend Dependencies:
+  {
+    "dependencies": {
+      "react": "^18.3.1",
+      "react-dom": "^18.3.1",
+      "react-router-dom": "^6.x",
+      "@dnd-kit/core": "^6.x",           // Drag & drop for rule reordering
+      "@dnd-kit/sortable": "^8.x",
+      "zustand": "^4.x",                  // Lightweight state management
+      "jszip": "^3.x",                    // Client-side ZIP generation
+      "file-saver": "^2.x",               // Download functionality
+      "clsx": "^2.x",                     // Conditional className utility
+      "tailwind-merge": "^2.x"            // Merge Tailwind classes
+    },
+    "devDependencies": {
+      "@vitejs/plugin-react": "^4.x",
+      "typescript": "^5.x",
+      "@types/react": "^18.x",
+      "@types/react-dom": "^18.x",
+      "tailwindcss": "^3.x",
+      "autoprefixer": "^10.x",
+      "postcss": "^8.x",
+      "eslint": "^8.x",
+      "prettier": "^3.x",
+      "@typescript-eslint/parser": "^6.x",
+      "@typescript-eslint/eslint-plugin": "^6.x"
+    }
+  }
+
+  Backend Dependencies:
+  {
+    "dependencies": {
+      "express": "^4.x",
+      "multer": "^1.x",                   // File upload handling
+      "adm-zip": "^0.5.x",                // ZIP creation
+      "cors": "^2.x",
+      "helmet": "^7.x",                   // Security headers
+      "express-fileupload": "^1.x",
+      "sanitize-filename": "^1.x",        // Filename sanitization
+      "uuid": "^9.x"                      // Unique session IDs
+    },
+    "devDependencies": {
+      "typescript": "^5.x",
+      "@types/express": "^4.x",
+      "@types/multer": "^1.x",
+      "@types/node": "^20.x",
+      "tsx": "^4.x",                      // TypeScript execution
+      "nodemon": "^3.x",
+      "eslint": "^8.x",
+      "prettier": "^3.x"
+    }
+  }
+
+  ---
+  🎯 DETAILED PHASED IMPLEMENTATION PLAN
+
+  PHASE 1: Project Foundation & Setup
+
+  Goal: Set up development environment with proper architecture
+
+  Tasks:
+  1. Project Structure Creation
+    - Create monorepo structure: renameflow/client and renameflow/server
+    - Set up package.json for both client and server
+    - Configure workspace if using npm workspaces or pnpm
+  2. Frontend Initialization
+    - Initialize Vite + React + TypeScript
+    - Configure Tailwind CSS with custom theme
+    - Add accessibility plugins (tailwindcss-forms, @tailwindcss/typography)
+    - Set up dark/light mode support
+    - Create base layout components (Header, Footer, Container)
+  3. Backend Initialization
+    - Initialize Express + TypeScript server
+    - Configure CORS for local development
+    - Set up Helmet for security
+    - Create middleware for error handling
+    - Set up file upload limits and validation
+  4. Development Tooling
+    - Configure ESLint with React + TypeScript rules
+    - Set up Prettier with import sorting
+    - Add pre-commit hooks (husky + lint-staged)
+    - Create npm scripts for dev, build, test
+  5. Architecture Setup (SOLID Principles)
+  client/
+  ├── src/
+  │   ├── components/           # Reusable UI components
+  │   │   ├── ui/              # Base UI elements (Button, Input, Card)
+  │   │   ├── upload/          # Upload-related components
+  │   │   ├── rules/           # Rule configuration components
+  │   │   └── preview/         # Preview components
+  │   ├── features/            # Feature modules
+  │   │   ├── file-upload/
+  │   │   ├── rule-engine/
+  │   │   └── preview/
+  │   ├── services/            # Business logic services
+  │   │   ├── RenameService.ts
+  │   │   ├── FileService.ts
+  │   │   └── ZipService.ts
+  │   ├── types/               # TypeScript types and interfaces
+  │   ├── store/               # Zustand state management
+  │   ├── hooks/               # Custom React hooks
+  │   └── utils/               # Utility functions
+
+  server/
+  ├── src/
+  │   ├── controllers/         # Route handlers
+  │   ├── services/            # Business logic
+  │   │   ├── FileProcessor.ts
+  │   │   ├── RuleEngine.ts
+  │   │   └── ZipGenerator.ts
+  │   ├── middleware/          # Express middleware
+  │   ├── types/               # TypeScript types
+  │   ├── utils/               # Utilities (validators, sanitizers)
+  │   └── routes/              # API routes
+
+  Deliverables:
+  - ✅ Complete project structure
+  - ✅ Running dev servers (frontend + backend)
+  - ✅ Tailwind CSS configured with theme
+  - ✅ TypeScript compilation working
+  - ✅ ESLint + Prettier configured
+
+  ---
+  PHASE 2: Core Data Models & State Management
+
+  Goal: Define all data structures and state management following SOLID principles
+
+  Tasks:
+  1. Type Definitions (Single Responsibility)
+  // types/File.ts
+  interface UploadedFile {
+    id: string;
+    originalName: string;
+    newName: string;
+    size: number;
+    type: string;
+    file: File;
+  }
+
+  // types/Rule.ts
+  enum RuleType {
+    CASING = 'casing',
+    PREFIX = 'prefix',
+    SUFFIX = 'suffix',
+    NUMBERING = 'numbering',
+    FIND_REPLACE = 'findReplace'
+  }
+
+  interface BaseRule {
+    id: string;
+    type: RuleType;
+    enabled: boolean;
+  }
+
+  interface CasingRule extends BaseRule {
+    type: RuleType.CASING;
+    caseType: 'snake_case' | 'camelCase' | 'PascalCase' | 'UPPERCASE' | 'lowercase';
+  }
+
+  // ... other rule interfaces
+  2. State Management with Zustand
+    - Create useFileStore for file management
+    - Create useRuleStore for rules management
+    - Create useHistoryStore for undo/redo functionality
+    - Implement state selectors for performance
+  3. Service Layer (Interface Segregation)
+    - RenameService: Apply renaming logic
+    - FileService: File validation and handling
+    - ZipService: ZIP generation
+    - Each service has a single, well-defined purpose
+  4. Backend Models
+    - Session management for temp files
+    - File metadata structures
+    - Rule processing pipeline
+
+  Deliverables:
+  - ✅ All TypeScript interfaces/types defined
+  - ✅ Zustand stores configured
+  - ✅ Service layer architecture complete
+  - ✅ Type safety across frontend and backend
+
+  ---
+  PHASE 3: File Upload System
+
+  Goal: Implement drag & drop file upload with validation
+
+  Tasks:
+  1. Upload UI Component
+    - Drag & drop zone with visual feedback
+    - File input fallback for accessibility
+    - Upload progress indicator
+    - File list display with metadata (name, size, type)
+    - Remove individual files functionality
+  2. File Validation
+    - Max file count validation (500 files)
+    - Max total size validation (100MB)
+    - File type validation (all common formats)
+    - Duplicate filename detection
+  3. Backend Upload Endpoint
+    - /api/upload endpoint with multer
+    - File sanitization and validation
+    - Temporary storage management
+    - Session-based file tracking
+    - Auto-cleanup after timeout
+  4. Accessibility Features
+    - Keyboard navigation for file list
+    - ARIA labels for screen readers
+    - Focus management
+    - Error announcements
+
+  Deliverables:
+  - ✅ Working drag & drop upload
+  - ✅ File validation with user feedback
+  - ✅ Backend upload processing
+  - ✅ Accessible upload interface
+
+  ---
+  PHASE 4: Rule Engine - Foundation
+
+  Goal: Build the modular rule engine following Open/Closed Principle
+
+  Tasks:
+  1. Abstract Rule Processor (Open/Closed Principle)
+  // Abstract base class for all rules
+  abstract class RuleProcessor {
+    abstract apply(filename: string, config: any): string;
+
+    protected sanitize(filename: string): string {
+      // Common sanitization logic
+    }
+  }
+
+  // Concrete implementations
+  class CasingRuleProcessor extends RuleProcessor {
+    apply(filename: string, config: CasingConfig): string {
+      // Casing logic
+    }
+  }
+
+  class PrefixRuleProcessor extends RuleProcessor {
+    apply(filename: string, config: PrefixConfig): string {
+      // Prefix logic
+    }
+  }
+  2. Rule Factory (Dependency Inversion)
+  class RuleFactory {
+    static createProcessor(rule: Rule): RuleProcessor {
+      switch(rule.type) {
+        case RuleType.CASING: return new CasingRuleProcessor();
+        case RuleType.PREFIX: return new PrefixRuleProcessor();
+        // ...
+      }
+    }
+  }
+  3. Rule Pipeline
+    - Process rules in sequential order
+    - Handle rule conflicts and errors
+    - Preserve file extensions
+    - Generate unique names for duplicates
+  4. Rule Components (Frontend)
+    - RuleList: Display all rules
+    - RuleCard: Individual rule display/edit
+    - AddRuleButton: Add new rule dropdown
+    - Rule configuration forms for each type
+
+  Deliverables:
+  - ✅ Modular rule processor architecture
+  - ✅ Rule factory implementation
+  - ✅ Rule pipeline working
+  - ✅ Rule UI components
+
+  ---
+  PHASE 5: Rule Types Implementation
+
+  Goal: Implement all 4 core rule types
+
+  Tasks:
+  1. Casing Rule
+    - Implement snake_case converter
+    - Implement camelCase converter
+    - Implement PascalCase converter
+    - Implement UPPERCASE converter
+    - Implement lowercase converter
+    - Handle special characters and numbers
+  2. Prefix/Suffix Rule
+    - Add prefix before filename
+    - Add suffix before extension
+    - Input validation
+    - Preview updates
+  3. Sequential Numbering Rule
+    - Custom start value input
+    - Padding options (001, 01, 1)
+    - Placement options (prefix vs suffix)
+    - Counter logic with file array
+  4. Find & Replace Rule
+    - Text search and replace
+    - Case-sensitive toggle
+    - Replace all vs first occurrence
+    - Empty search validation
+  5. Rule Configuration UI
+    - Dedicated config panel for each rule type
+    - Input validation and error messages
+    - Real-time preview updates
+    - Responsive form layouts
+
+  Deliverables:
+  - ✅ All 4 rule types working
+  - ✅ Configuration UI for each rule
+  - ✅ Input validation complete
+  - ✅ Unit tests for each rule processor
+
+  ---
+  PHASE 6: Rule Management & Drag-and-Drop
+
+  Goal: Implement rule ordering and management features
+
+  Tasks:
+  1. Drag & Drop with @dnd-kit
+    - Install and configure @dnd-kit
+    - Make rule list sortable
+    - Visual feedback during drag
+    - Update rule order in state
+    - Trigger preview recalculation on reorder
+  2. Rule Actions
+    - Edit rule (open configuration)
+    - Delete rule with confirmation
+    - Enable/disable rule toggle
+    - Duplicate rule
+  3. Rule State Management
+    - Add rule to store
+    - Update rule configuration
+    - Remove rule from store
+    - Reorder rules in store
+    - Trigger preview recalculation on any change
+  4. Accessibility
+    - Keyboard shortcuts for rule actions
+    - Announce drag operations to screen readers
+    - Focus management after rule operations
+
+  Deliverables:
+  - ✅ Drag-to-reorder rules working
+  - ✅ Add/edit/delete rules working
+  - ✅ Rule state properly managed
+  - ✅ Accessible rule management
+
+  ---
+  PHASE 7: Live Preview System
+
+  Goal: Real-time preview of renamed files
+
+  Tasks:
+  1. Preview Component
+    - Side-by-side Before/After table
+    - Highlight changed parts of filenames
+    - Show file extensions separately
+    - Virtualized list for large datasets (react-window)
+  2. Preview Logic
+    - Apply all rules in order to each file
+    - Handle duplicate name conflicts
+    - Sanitize invalid characters
+    - Calculate preview on every rule change
+  3. Performance Optimization
+    - Debounce preview calculations
+    - Memoize rule processors
+    - Use React.memo for preview items
+    - Virtual scrolling for 100+ files
+  4. Preview Controls
+    - Toggle preview on/off
+    - Filter preview (show all, first 10, 50)
+    - Search/filter filenames
+    - Export preview as CSV (bonus)
+
+  Deliverables:
+  - ✅ Real-time preview working
+  - ✅ Performance optimized
+  - ✅ Preview controls functional
+  - ✅ Handles large file counts
+
+  ---
+  PHASE 8: Undo/Reset Functionality
+
+  Goal: Implement undo/redo and reset features
+
+  Tasks:
+  1. History Store
+    - Track rule change history
+    - Implement undo stack
+    - Implement redo stack
+    - Maximum history size (e.g., 50 actions)
+  2. Undo/Redo Logic
+    - Undo last rule change
+    - Redo undone change
+    - Clear future history on new action
+    - Update preview on undo/redo
+  3. Reset Functionality
+    - Reset all rules to empty state
+    - Reset files to original names
+    - Confirmation dialog before reset
+  4. UI Controls
+    - Undo button (disabled when no history)
+    - Redo button (disabled when no future)
+    - Reset button with confirmation
+    - Keyboard shortcuts (Ctrl+Z, Ctrl+Shift+Z)
+
+  Deliverables:
+  - ✅ Undo/redo working
+  - ✅ Reset functionality complete
+  - ✅ History properly managed
+  - ✅ Keyboard shortcuts working
+
+  ---
+  PHASE 9: Download & ZIP Generation
+
+  Goal: Process files and generate downloadable ZIP
+
+  Tasks:
+  1. Backend Processing
+    - /api/process endpoint
+    - Apply all rules to filenames server-side
+    - Handle duplicate names
+    - Generate ZIP with renamed files
+    - Send ZIP as download
+  2. ZIP Generation
+    - Use adm-zip to create archive
+    - Rename files without modifying content
+    - Preserve file metadata
+    - Stream large ZIPs
+  3. Frontend Download
+    - "Rename & Download" button
+    - Show processing progress
+    - Trigger browser download
+    - Success/error notifications
+  4. Cleanup
+    - Delete temp files after download
+    - Clear session data
+    - Auto-cleanup on timeout
+    - Handle errors gracefully
+
+  Deliverables:
+  - ✅ ZIP generation working
+  - ✅ Download triggered successfully
+  - ✅ Temp file cleanup implemented
+  - ✅ Error handling complete
+
+  ---
+  PHASE 10: Error Handling & Edge Cases
+
+  Goal: Handle all edge cases from PRD
+
+  Tasks:
+  1. Duplicate Filename Handling
+    - Detect duplicate filenames after rules
+    - Auto-append _1, _2, _3, etc.
+    - Show warning in preview
+    - User can customize duplicate suffix
+  2. Invalid Character Sanitization
+    - Remove /:*?"<>| characters
+    - Replace with safe alternatives
+    - Show sanitization in preview
+    - Warning notification
+  3. Empty/Invalid States
+    - Empty upload validation
+    - Empty rule configuration warnings
+    - No files selected error
+    - Network error handling
+  4. Conflict Detection
+    - Warn if Find & Replace deletes full name
+    - Warn if rules create invalid filenames
+    - Prevent processing with errors
+    - Clear error messages
+  5. Progress & Loading States
+    - Upload progress bar
+    - Processing progress indicator
+    - Loading states for all async operations
+    - Timeout handling
+
+  Deliverables:
+  - ✅ All edge cases handled
+  - ✅ Clear error messages
+  - ✅ User-friendly warnings
+  - ✅ Robust error recovery
+
+  ---
+  PHASE 11: UI/UX Polish & Accessibility
+
+  Goal: Create a beautiful, accessible interface
+
+  Tasks:
+  1. Landing Page
+    - Hero section with CTA
+    - Feature highlights
+    - Demo GIF/video
+    - "Get Started" button
+    - Responsive design
+  2. Main Interface
+    - Clean dashboard layout
+    - Color-coded rule cards
+    - Consistent spacing and typography
+    - Smooth transitions and animations
+    - Loading skeletons
+  3. Dark/Light Mode
+    - Toggle switch in header
+    - Persist preference in localStorage
+    - Smooth theme transitions
+    - Proper contrast ratios
+  4. Accessibility (WCAG 2.1 AA)
+    - Semantic HTML elements
+    - ARIA labels and roles
+    - Keyboard navigation for all features
+    - Focus visible indicators
+    - Screen reader announcements
+    - Color contrast compliance
+    - Skip links
+  5. Responsive Design
+    - Mobile-first approach
+    - Breakpoints: mobile, tablet, desktop
+    - Touch-friendly targets (min 44px)
+    - Optimized layouts for each size
+
+  Deliverables:
+  - ✅ Polished UI design
+  - ✅ Dark/light mode working
+  - ✅ WCAG AA compliant
+  - ✅ Fully responsive
+
+  ---
+  PHASE 12: Testing & Quality Assurance
+
+  Goal: Ensure reliability and quality
+
+  Tasks:
+  1. Unit Tests
+    - Test all rule processors
+    - Test utility functions
+    - Test state management
+    - Test file validation
+  2. Integration Tests
+    - Test API endpoints
+    - Test file upload flow
+    - Test ZIP generation
+    - Test error scenarios
+  3. E2E Tests (Optional)
+    - Test complete user flows
+    - Test drag & drop
+    - Test rule management
+    - Test download process
+  4. Manual Testing
+    - Test with various file types
+    - Test with large file counts
+    - Test edge cases from PRD
+    - Cross-browser testing
+    - Accessibility audit
+  5. Performance Testing
+    - Test with 500 files
+    - Test with 100MB total size
+    - Measure preview calculation time
+    - Optimize bottlenecks
+
+  Deliverables:
+  - ✅ Unit test coverage >80%
+  - ✅ Integration tests passing
+  - ✅ Manual test cases completed
+  - ✅ Performance benchmarks met
+
+  ---
+  PHASE 13: Documentation & Final Polish
+
+  Goal: Complete documentation and prepare for launch
+
+  Tasks:
+  1. Code Documentation
+    - JSDoc comments for all functions
+    - README for client and server
+    - Architecture documentation
+    - API documentation
+  2. User Documentation
+    - User guide / help section
+    - FAQ section
+    - Tooltips for UI elements
+    - Example use cases
+  3. Developer Documentation
+    - Setup instructions
+    - Development workflow
+    - Build and deployment guide
+    - Contributing guidelines
+  4. Final Polish
+    - Code cleanup and refactoring
+    - Remove console.logs
+    - Optimize bundle size
+    - Security audit
+
+  Deliverables:
+  - ✅ Complete documentation
+  - ✅ Clean, production-ready code
+  - ✅ User guide complete
+  - ✅ Ready for deployment
+
+  ---
+  📊 SUMMARY OF PHASES
+
+  | Phase | Focus Area                | Duration Estimate | Priority |
+  |-------|---------------------------|-------------------|----------|
+  | 1     | Project Setup             | 1-2 days          | Critical |
+  | 2     | Data Models & State       | 1 day             | Critical |
+  | 3     | File Upload               | 2-3 days          | Critical |
+  | 4     | Rule Engine Foundation    | 2 days            | Critical |
+  | 5     | Rule Types Implementation | 3-4 days          | Critical |
+  | 6     | Rule Management & DnD     | 2 days            | High     |
+  | 7     | Live Preview              | 2-3 days          | Critical |
+  | 8     | Undo/Reset                | 1-2 days          | High     |
+  | 9     | Download & ZIP            | 2 days            | Critical |
+  | 10    | Error Handling            | 2 days            | High     |
+  | 11    | UI/UX Polish              | 3-4 days          | High     |
+  | 12    | Testing & QA              | 3-4 days          | High     |
+  | 13    | Documentation             | 1-2 days          | Medium   |
+
+  Total Estimated Timeline: 3-4 weeks for Draft 1 MVP
+
+  ---
+  🎯 SUCCESS CRITERIA FOR DRAFT 1
+
+  - Users can upload individual files via drag & drop
+  - All 4 rule types work correctly (Casing, Prefix/Suffix, Numbering, Find & Replace)
+  - Rules can be added, edited, deleted, and reordered
+  - Live preview shows accurate before/after names
+  - Undo/Reset functionality works
+  - Renamed files download as ZIP
+  - All edge cases handled (duplicates, invalid chars, etc.)
+  - UI is responsive and accessible (WCAG AA)
+  - Dark/light mode toggle works
+  - No security vulnerabilities (XSS, path traversal, etc.)
+
+
+

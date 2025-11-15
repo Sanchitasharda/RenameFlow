@@ -1,0 +1,486 @@
+# RenameFlow - Project Structure Documentation
+
+## 📁 Project Overview
+RenameFlow is a batch file renaming web application built with React, TypeScript, Vite, and Tailwind CSS v4.
+This document explains the complete project structure and the significance of each file and folder.
+
+================================================================================
+## 🗂️ Root Directory Structure
+================================================================================
+
+rename-flow/
+├── client/                 # Frontend React application
+├── server/                 # Backend Node.js/Express server (empty - to be implemented)
+├── prd-rename flow.txt     # Product Requirements Document
+├── CLAUDE.md              # Development guidelines and documentation
+└── structure.txt          # This file - Project structure documentation
+
+================================================================================
+## 💻 CLIENT FOLDER (Frontend)
+================================================================================
+
+client/
+├── node_modules/          # Dependencies (installed via npm install)
+├── public/                # Static assets served directly
+├── src/                   # Source code (detailed below)
+├── .gitignore            # Git ignore rules
+├── eslint.config.js      # ESLint configuration for code linting
+├── index.html            # HTML entry point
+├── package.json          # Dependencies and scripts
+├── package-lock.json     # Locked dependency versions
+├── tailwind.config.js    # Tailwind CSS v4 configuration (legacy - may not be used)
+├── tsconfig.json         # TypeScript configuration (root)
+├── tsconfig.app.json     # TypeScript config for app code
+├── tsconfig.node.json    # TypeScript config for Node.js code
+└── vite.config.ts        # Vite build tool configuration
+
+### 📄 Key Configuration Files Explained:
+
+1. **package.json**
+   - Lists all dependencies (React, Zustand, Tailwind, etc.)
+   - Defines npm scripts:
+     * `npm run dev` - Start development server
+     * `npm run build` - Build for production
+     * `npm run preview` - Preview production build
+     * `npm run lint` - Run ESLint
+
+2. **vite.config.ts** ⭐ IMPORTANT
+   - Configures Vite bundler
+   - Includes React plugin: @vitejs/plugin-react
+   - Includes Tailwind plugin: @tailwindcss/vite
+   - This is where Tailwind CSS v4 integration happens
+
+3. **tailwind.config.js**
+   - Tailwind v4 may not use this file (uses CSS-based config instead)
+   - Kept for compatibility
+   - Defines custom colors (primary palette)
+   - Configures dark mode as 'class' based
+
+4. **tsconfig.json**
+   - TypeScript compiler options
+   - Project references for better organization
+
+5. **eslint.config.js**
+   - Code quality rules
+   - React and TypeScript specific rules
+
+================================================================================
+## 🎨 SRC FOLDER (Source Code)
+================================================================================
+
+client/src/
+├── components/            # Reusable UI components
+│   ├── ui/               # Base UI components (Header, Layout)
+│   ├── upload/           # Upload-related components (empty - Phase 3)
+│   ├── rules/            # Rule configuration components (empty - Phase 4-6)
+│   └── preview/          # Preview components (empty - Phase 7)
+│
+├── features/             # Feature-based modules
+│   ├── file-upload/      # File upload feature (empty - Phase 3)
+│   ├── rule-engine/      # Rule engine feature (empty - Phase 4-6)
+│   └── preview/          # Preview feature (empty - Phase 7)
+│
+├── services/             # Business logic services
+│                         # (empty - to be implemented in Phase 2+)
+│
+├── types/                # TypeScript type definitions ⭐
+│   ├── File.ts          # File-related types
+│   ├── Rule.ts          # Rule-related types
+│   └── index.ts         # Central export
+│
+├── store/                # Zustand state management ⭐
+│   ├── useFileStore.ts  # File upload state
+│   ├── useRuleStore.ts  # Rules state
+│   ├── useUIStore.ts    # UI state (dark mode, loading, etc.)
+│   └── index.ts         # Central export
+│
+├── hooks/                # Custom React hooks (empty - to be implemented)
+│
+├── utils/                # Utility functions (empty - to be implemented)
+│
+├── assets/               # Static assets (images, icons)
+│
+├── App.tsx               # Main App component ⭐
+├── main.tsx              # React app entry point ⭐
+└── index.css             # Global CSS with Tailwind imports ⭐
+
+### 📄 Key Source Files Explained:
+
+================================================================================
+### 1️⃣ ENTRY POINTS
+================================================================================
+
+**main.tsx**
+- React application entry point
+- Imports index.css (which imports Tailwind)
+- Renders <App /> component into #root element
+- Uses React.StrictMode for development warnings
+
+**App.tsx**
+- Main application component
+- Uses Layout component for consistent structure
+- Initializes dark mode from localStorage or system preference
+- Displays welcome page with feature cards
+- Shows dark mode status
+
+**index.css** ⭐ CRITICAL
+- Imports Tailwind CSS v4: `@import "tailwindcss";`
+- Defines custom theme variables in @theme block
+- Custom primary color palette (blue shades)
+
+================================================================================
+### 2️⃣ COMPONENTS FOLDER
+================================================================================
+
+components/
+└── ui/
+    ├── Header.tsx         # App header with dark mode toggle
+    ├── Layout.tsx         # Page layout wrapper
+    └── index.ts           # Exports
+
+**Header.tsx**
+- Displays "RenameFlow" branding
+- Dark mode toggle button (sun/moon icon)
+- Uses useUIStore for dark mode state
+- Accessible with ARIA labels
+
+**Layout.tsx**
+- Wraps all pages with consistent structure
+- Includes Header component
+- Main content area with max-width container
+- Footer with copyright
+
+================================================================================
+### 3️⃣ TYPES FOLDER ⭐ IMPORTANT
+================================================================================
+
+types/
+├── File.ts              # File-related TypeScript interfaces
+├── Rule.ts              # Rule-related TypeScript interfaces
+└── index.ts             # Central export
+
+**File.ts** - Defines:
+- `UploadedFile` interface: Structure for uploaded files
+  * id, originalName, newName, size, type, file, hasConflict, resolvedName
+- `FileValidationResult` interface: Validation results
+- `FILE_UPLOAD_LIMITS` constants: Max files (500), max size (100MB)
+
+**Rule.ts** - Defines:
+- `RuleType` enum: CASING, PREFIX, SUFFIX, NUMBERING, FIND_REPLACE
+- `CasingType` enum: snake_case, camelCase, PascalCase, etc.
+- `NumberingPlacement` enum: PREFIX, SUFFIX
+- `BaseRule` interface: Common rule properties
+- Specific rule interfaces:
+  * `CasingRule` - Change filename casing
+  * `PrefixRule` - Add prefix to filename
+  * `SuffixRule` - Add suffix before extension
+  * `NumberingRule` - Add sequential numbers
+  * `FindReplaceRule` - Find and replace text
+- `Rule` union type: All possible rule types
+
+================================================================================
+### 4️⃣ STORE FOLDER ⭐ STATE MANAGEMENT
+================================================================================
+
+store/
+├── useFileStore.ts      # File upload state management
+├── useRuleStore.ts      # Rules state management
+├── useUIStore.ts        # UI state (dark mode, loading, messages)
+└── index.ts             # Central export
+
+All stores use **Zustand** (simple state management library).
+
+**useFileStore.ts** - Manages:
+- files: UploadedFile[] - List of uploaded files
+- totalSize: number - Total size in bytes
+- Actions:
+  * addFile() - Add single file
+  * addFiles() - Add multiple files
+  * removeFile() - Remove by ID
+  * updateFileName() - Update file's new name
+  * clearFiles() - Clear all files
+  * updateFileConflict() - Mark naming conflicts
+  * getFileById() - Retrieve specific file
+
+**useRuleStore.ts** - Manages:
+- rules: Rule[] - List of transformation rules
+- Actions:
+  * addRule() - Add new rule
+  * updateRule() - Update existing rule
+  * removeRule() - Delete rule
+  * toggleRule() - Enable/disable rule
+  * reorderRules() - Change rule order (for drag & drop)
+  * clearRules() - Clear all rules
+  * getRuleById() - Retrieve specific rule
+  * getEnabledRules() - Get only active rules
+
+**useUIStore.ts** - Manages:
+- darkMode: boolean - Dark mode on/off
+- isUploading: boolean - Upload in progress
+- isProcessing: boolean - ZIP generation in progress
+- error: string | null - Error message
+- success: string | null - Success message
+- Actions:
+  * toggleDarkMode() - Toggle dark mode + update localStorage
+  * setDarkMode() - Set dark mode explicitly
+  * setIsUploading() - Set upload status
+  * setIsProcessing() - Set processing status
+  * setError() - Set error message
+  * setSuccess() - Set success message
+  * clearMessages() - Clear all messages
+
+================================================================================
+### 5️⃣ FEATURES FOLDER (Empty - To Be Implemented)
+================================================================================
+
+features/
+├── file-upload/         # Phase 3: Upload system implementation
+├── rule-engine/         # Phase 4-6: Rule engine implementation
+└── preview/             # Phase 7: Live preview implementation
+
+Purpose: Feature-based code organization following best practices.
+
+================================================================================
+### 6️⃣ SERVICES FOLDER (Empty - To Be Implemented)
+================================================================================
+
+services/
+└── (to be created in Phase 2+)
+
+Future services:
+- RenameService.ts - Apply renaming logic
+- FileService.ts - File validation and handling
+- ZipService.ts - ZIP file generation
+
+================================================================================
+### 7️⃣ HOOKS FOLDER (Empty - To Be Implemented)
+================================================================================
+
+hooks/
+└── (to be created as needed)
+
+Future custom hooks:
+- useFileUpload.ts - File upload logic
+- useRuleProcessor.ts - Rule processing logic
+- usePreview.ts - Preview calculation logic
+
+================================================================================
+### 8️⃣ UTILS FOLDER (Empty - To Be Implemented)
+================================================================================
+
+utils/
+└── (to be created as needed)
+
+Future utilities:
+- fileValidation.ts - File validation helpers
+- filenameSanitizer.ts - Clean invalid characters
+- duplicateResolver.ts - Handle duplicate names
+
+================================================================================
+## 🎨 TAILWIND CSS v4 CONFIGURATION
+================================================================================
+
+**How Tailwind is Set Up:**
+
+1. **Installation:**
+   - tailwindcss@4.1.17 (latest v4)
+   - @tailwindcss/vite@4.1.17 (Vite plugin)
+
+2. **Vite Integration:**
+   - vite.config.ts includes: `import tailwindcss from '@tailwindcss/vite'`
+   - Added to plugins array: `plugins: [react(), tailwindcss()]`
+
+3. **CSS Import:**
+   - index.css uses: `@import "tailwindcss";`
+   - This replaces old `@tailwind base/components/utilities` directives
+
+4. **Custom Theme:**
+   - Defined in index.css using `@theme { }` block
+   - Custom primary color palette (--color-primary-50 to --color-primary-950)
+
+5. **Dark Mode:**
+   - Configured as 'class' based in tailwind.config.js
+   - Toggled by adding/removing 'dark' class to <html> element
+   - Managed via useUIStore.toggleDarkMode()
+
+**Using Tailwind Classes:**
+- Light mode: `text-gray-900`, `bg-white`
+- Dark mode: `dark:text-white`, `dark:bg-gray-800`
+- Responsive: `md:grid-cols-2`, `lg:grid-cols-4`
+- Interactive: `hover:bg-blue-700`, `focus:ring-2`
+
+================================================================================
+## 🖥️ SERVER FOLDER (Backend - Empty)
+================================================================================
+
+server/
+└── (completely empty - to be implemented)
+
+**Future Structure:**
+server/
+├── src/
+│   ├── controllers/      # Route handlers
+│   ├── services/         # Business logic
+│   ├── middleware/       # Express middleware
+│   ├── types/           # TypeScript types
+│   ├── utils/           # Utilities
+│   ├── routes/          # API routes
+│   └── server.ts        # Express app entry
+├── package.json
+└── tsconfig.json
+
+**Planned Backend Tech:**
+- Node.js with Express
+- TypeScript
+- Multer (file uploads)
+- adm-zip (ZIP generation)
+
+================================================================================
+## 📋 DEVELOPMENT WORKFLOW
+================================================================================
+
+**Phase 1: Setup (COMPLETED ✅)**
+- ✅ Project structure created
+- ✅ Tailwind CSS v4 configured
+- ✅ TypeScript types defined
+- ✅ Zustand stores created
+- ✅ Base UI components (Header, Layout)
+- ✅ Dark mode working
+
+**Phase 2: Core Data Models (COMPLETED ✅)**
+- ✅ Type definitions
+- ✅ State management
+
+**Phase 3: File Upload (NEXT)**
+- Drag & drop component
+- File validation
+- Upload UI
+
+**Phase 4-6: Rule Engine**
+- Rule processors
+- Rule UI components
+- Rule management
+
+**Phase 7: Live Preview**
+- Before/after display
+- Real-time updates
+
+**Phase 8-13: Remaining Features**
+- Undo/reset
+- Download & ZIP
+- Error handling
+- UI polish
+- Testing
+- Documentation
+
+================================================================================
+## 🚀 HOW TO RUN
+================================================================================
+
+**Development:**
+1. Navigate to client folder: `cd client`
+2. Install dependencies: `npm install` (already done)
+3. Start dev server: `npm run dev`
+4. Open browser: http://localhost:5173 (or port shown in terminal)
+
+**Production Build:**
+1. Build: `npm run build`
+2. Preview: `npm run preview`
+
+**Code Quality:**
+1. Lint: `npm run lint`
+2. Format: `npm run format` (if configured)
+
+================================================================================
+## 🎯 KEY TECHNOLOGIES
+================================================================================
+
+**Frontend:**
+- React 19.2.0 (latest)
+- TypeScript 5.9.3
+- Vite 7.2.2 (build tool)
+- Tailwind CSS 4.1.17 (styling)
+- Zustand 5.0.8 (state management)
+- @dnd-kit (drag & drop - installed but not used yet)
+- jszip + file-saver (ZIP generation - installed but not used yet)
+
+**Build Tools:**
+- Vite (fast dev server & bundler)
+- TypeScript compiler
+- ESLint (linting)
+- Prettier (formatting)
+
+**State Management:**
+- Zustand (simple, powerful, no boilerplate)
+- localStorage for dark mode persistence
+
+================================================================================
+## 🐛 COMMON ISSUES & SOLUTIONS
+================================================================================
+
+**Issue: Blank page**
+- Solution: Check correct port (shown in terminal)
+- Solution: Hard refresh (Ctrl+Shift+R)
+- Solution: Check browser console for errors
+
+**Issue: Tailwind not working**
+- Solution: Ensure @import "tailwindcss" in index.css
+- Solution: Ensure @tailwindcss/vite in vite.config.ts plugins
+- Solution: Restart dev server
+
+**Issue: Dark mode not toggling**
+- Solution: Check useUIStore is imported
+- Solution: Check localStorage for saved preference
+- Solution: Verify 'dark' class is added to <html>
+
+**Issue: TypeScript errors**
+- Solution: Run `npm run build` to see all errors
+- Solution: Check imports are correct
+- Solution: Ensure types are exported from index.ts
+
+================================================================================
+## 📚 IMPORTANT FILES SUMMARY
+================================================================================
+
+**Must-read files:**
+1. prd-rename flow.txt - Full project requirements
+2. CLAUDE.md - Development guidelines
+3. client/src/types/* - Type definitions
+4. client/src/store/* - State management
+5. client/vite.config.ts - Build configuration
+6. client/src/index.css - Tailwind setup
+
+**Entry points:**
+1. client/index.html - HTML entry
+2. client/src/main.tsx - React entry
+3. client/src/App.tsx - Main component
+
+**Configuration:**
+1. client/package.json - Dependencies
+2. client/vite.config.ts - Vite config
+3. client/tsconfig.json - TypeScript config
+4. client/tailwind.config.js - Tailwind config (legacy)
+
+================================================================================
+## 🎓 LEARNING RESOURCES
+================================================================================
+
+**Tailwind CSS v4:**
+- https://tailwindcss.com/docs/installation/using-vite
+- Breaking changes from v3 to v4
+
+**Zustand:**
+- Simple state management
+- No providers needed
+- TypeScript friendly
+
+**Vite:**
+- Fast HMR (Hot Module Replacement)
+- ESBuild for fast builds
+
+================================================================================
+END OF STRUCTURE DOCUMENTATION
+================================================================================
+
+Last Updated: Phase 1 Complete
+Next Steps: Implement Phase 3 (File Upload System)
